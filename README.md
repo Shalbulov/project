@@ -26,7 +26,7 @@ DevOps: Docker & Docker Compose
 ## ⚡️ Быстрый запуск
 
 1.  **Клонируйте репозиторий**:
-    git clone <ссылка_на_ваш_репозиторий>
+    git clone https://github.com/Shalbulov/project.git
     cd project
 
 
