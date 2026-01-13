@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Netflix admin panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; }
+        .navbar { background-color: #e50914 !important; }
+        .filter-card { border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .table-container { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .cast-cell { max-width: 200px; font-size: 0.85rem; color: #666; }
+        .badge-rating { background-color: #222; color: #fff; font-weight: normal; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark mb-4">
+    <div class="container-fluid px-5">
+        <a class="navbar-brand fw-bold" href="/index">🎬 NETFLIX DATABASE</a>
+        <a href="/login" class="btn btn-outline-light btn-sm">Выйти</a>
+    </div>
+</nav>
+
+<div class="container-fluid px-5">
+    <div class="card filter-card mb-4">
+        <div class="card-body p-4">
+            <form method="get" action="/index" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Поиск по названию</label>
+                    <input type="text" name="search" class="form-control" placeholder="Название..." value="{{ selected.search }}">
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Год</label>
+                    <select name="year" class="form-select">
+                        <option value="">Все годы</option>
+                        {% for y in filter_data.years %}
+                        <option value="{{ y }}" {% if selected.year == y|string %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Страна</label>
+                    <select name="country" class="form-select">
+                        <option value="">Все страны</option>
+                        {% for c in filter_data.countries %}
+                        <option value="{{ c }}" {% if selected.country == c %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Рейтинг</label>
+                    <select name="rating" class="form-select">
+                        <option value="">Все</option>
+                        {% for r in filter_data.ratings %}
+                        <option value="{{ r }}" {% if selected.rating == r %}selected{% endif %}>{{ r }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Категория</label>
+                    <select name="category" class="form-select">
+                        <option value="">Все жанры</option>
+                        {% for cat in filter_data.categories %}
+                        <option value="{{ cat }}" {% if selected.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark w-100">Найти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Найдено записей: <span class="text-danger">{{ total }}</span></h5>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Фильм</th>
+                    <th>Инфо</th>
+                    <th>Режиссер</th>
+                    <th>Актеры</th>
+                    <th>Жанр</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for film in movies %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ film.title }}</div>
+                        <span class="badge bg-secondary" style="font-size: 0.7rem;">{{ film.type }}</span>
+                    </td>
+                    <td class="small">
+                        {{ film.release_year }}<br>
+                        <span class="text-muted">{{ film.country or 'N/A' }}</span><br>
+                        <span class="badge badge-rating">{{ film.rating or 'NR' }}</span>
+                    </td>
+                    <td class="small">{{ film.director or '—' }}</td>
+                    <td class="cast-cell">
+                        {% if film.cast %}
+                            {{ film.cast[:100] }}...
+                        {% else %}
+                            <span class="text-muted small">Нет данных</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="text-danger small fw-bold">{{ film.listed_in }}</div>
+                        <div class="text-muted small">{{ film.duration }}</div>
+                    </td>
+                    <td class="small text-muted" style="max-width: 250px;">
+                        {% if film.description %}
+                            {{ film.description[:120] }}...
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">Ничего не найдено</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer class="mt-5 mb-3 text-center text-muted small">
+    &copy; 2026 movie analytics dashboard by Arsen Anarbek
+</footer>
+
+</body>
+</html>

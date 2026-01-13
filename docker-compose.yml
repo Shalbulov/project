@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: films_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: films_database
+    ports:
+      - "5433:5432"
+
+  app:
+    build: .
+    container_name: fastapi_app
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/films_database
+      - DOCKER_ENV=true
